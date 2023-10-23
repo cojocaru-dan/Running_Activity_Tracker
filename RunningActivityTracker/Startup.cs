@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Http;
 using RunningActivityTracker.Auth;
 using RunningActivityTracker.Repositories;
 using RunningActivityTracker.Services;
+using RunningActivityTracker.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace RunningActivityTracker
 {
@@ -28,6 +30,8 @@ namespace RunningActivityTracker
             services.AddControllers();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             // add your services and repositories registrations here
+            services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<ITeamService, TeamService>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "RunningActivityTracker", Version = "v1" });
@@ -35,7 +39,10 @@ namespace RunningActivityTracker
 
             // configure basic authentication
             services.AddAuthentication("BasicAuthentication")
-                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+                    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+
+            var jwtSection = Configuration.GetSection("JWTSettings");
+            services.Configure<JWTSettings>(jwtSection);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

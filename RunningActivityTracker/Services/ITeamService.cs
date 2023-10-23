@@ -5,8 +5,8 @@ namespace RunningActivityTracker.Services
 {
     public interface ITeamService
     {
-        void CreateTeam(string teamName);
-        void AddMember(string memberName);
+        TeamEntity CreateTeam(string teamName, UserEntityWithToken currentUser);
+        TeamEntity AddMember(UserEntityWithToken newMember, UserEntityWithToken admin);
         IEnumerable<TeamEntity> GetAll();
     }
 }

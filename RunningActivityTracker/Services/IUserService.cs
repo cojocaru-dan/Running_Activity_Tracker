@@ -6,9 +6,9 @@ namespace RunningActivityTracker.Services
 {
     public interface IUserService
     {
-        UserEntity FindCurrentUser();
-        void CreateUser(UserEntity user);
-        Task<UserEntity> AuthenticateAsync(string userName, string password);
-        IEnumerable<UserEntity> GetAll();
+        UserEntityWithToken FindCurrentUser();
+        UserEntityWithToken CreateUser(UserEntity user);
+        Task<UserEntityWithToken> AuthenticateAsync(string userName, string password);
+        IEnumerable<UserEntityWithToken> GetAll();
     }
 }

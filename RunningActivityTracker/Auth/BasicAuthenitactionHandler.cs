@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RunningActivityTracker.Entities;
 using RunningActivityTracker.Services;
+using System.Linq;
 
 namespace RunningActivityTracker.Auth
 {
@@ -40,14 +41,27 @@ namespace RunningActivityTracker.Auth
             if (!Request.Headers.ContainsKey("Authorization"))
                 return AuthenticateResult.Fail("Missing Authorization Header");
 
-            UserEntity user = null;
+            // UserEntity user = null;
             //implement your authentication logic here
+            var authenticationHeaderValue = AuthenticationHeaderValue.Parse(Request.Headers.Authorization); // Remove the "Basic " start of the header value
+
+            string userInfoDecoded = System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(authenticationHeaderValue.Parameter));
+
+            string userName = userInfoDecoded.Split(":")[0];
+            string password = userInfoDecoded.Split(":")[1];
+            var user = _userService.GetAll().Where(user => user.Username == userName && user.Password == password).FirstOrDefault();
+
+            if (user == null) return AuthenticateResult.Fail("Invalid username or password!");
 
             var claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Name, user.Username),
             };
             // add user roles as claims here
+            foreach (var role in user.Roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
 
             var identity = new ClaimsIdentity(claims, Scheme.Name);

@@ -17,11 +17,11 @@ namespace RunningActivityTracker.Controllers
         }
 
         [AuthorizeWithToken]
-        // add verb and route
+        [HttpPost("users/post")]
         public ActionResult AddMember([FromBody] UserEntity user)
         {
-            _userService.CreateUser(user);
-            return Ok();
+            var userEntityWithToken = _userService.CreateUser(user);
+            return Ok(userEntityWithToken);
         }
     }
 }
